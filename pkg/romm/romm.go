@@ -125,7 +125,7 @@ func (c Client) ManuallyMatchRom(rommId int64, fsName string, searchResult *Sear
 	}
 
 	if !res.IsSuccess() {
-		logging.Logger.Fatal("Unexpected HTTP status: %s", zap.Int("status", res.StatusCode()))
+		logging.Logger.Error("Unexpected HTTP status", zap.Int("status", res.StatusCode()))
 	}
 
 	logging.Logger.Debug("Manually matched ROM", zap.Int64("rommId", rommId), zap.Int64("igdbId", searchResult.IgdbId))
@@ -147,7 +147,7 @@ func (c Client) SearchMetadataByIgdbId(rommId int64, igdbId int64) (*SearchRespo
 	}
 
 	if !res.IsSuccess() {
-		logging.Logger.Fatal("Unexpected HTTP status: %s", zap.Int("status", res.StatusCode()))
+		logging.Logger.Error("Unexpected HTTP status", zap.Int("status", res.StatusCode()))
 	}
 
 	result := res.Result().(*[]SearchResponse)

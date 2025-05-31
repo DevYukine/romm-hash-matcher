@@ -34,7 +34,7 @@ func (c Client) GetIdBySlug(slug string) (*int64, error) {
 	}
 
 	if !resp.IsSuccess() {
-		logging.Logger.Fatal("Unexpected HTTP status: %s", zap.Int("status", resp.StatusCode()))
+		logging.Logger.Error("Unexpected HTTP status", zap.Int("status", resp.StatusCode()))
 	}
 
 	matchResponse := resp.Result().(*SlimmedGameResponse)
@@ -59,7 +59,7 @@ func (c Client) IdentifyGame(rom *model.InternalRom) (*MatchResponse, error) {
 	}
 
 	if !resp.IsSuccess() {
-		logging.Logger.Fatal("Unexpected HTTP status: %s", zap.Int("status", resp.StatusCode()))
+		logging.Logger.Error("Unexpected HTTP status", zap.Int("status", resp.StatusCode()))
 	}
 
 	matchResponse := resp.Result().(*MatchResponse)
