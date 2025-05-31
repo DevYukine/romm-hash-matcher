@@ -73,7 +73,7 @@ func main() {
 				}
 			} else {
 				logging.Logger.Debug("Found zipped Rom, downloading and hashing the content", zap.String("romName", rom.Name))
-				if rom.FsSizeBytes > 2*1024*1024 {
+				if rom.FsSizeBytes > 2*1024*1024*1024 {
 					logging.Logger.Warn("Found zipped Rom with size larger than 2GB, skipping for now as hashing would take a long time", zap.String("romName", rom.Name))
 					return
 				}
