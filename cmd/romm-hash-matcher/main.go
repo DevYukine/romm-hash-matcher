@@ -138,6 +138,11 @@ func main() {
 				return
 			}
 
+			if searchResult.IgdbId == nil {
+				logging.Logger.Warn("No IGDB ID found in search result", zap.String("romName", rom.Name), zap.Int64p("igdbId", igdbId), zap.Stringp("slug", slug))
+				return
+			}
+
 			err = rommClient.ManuallyMatchRom(rom.Id, rom.FsName, searchResult)
 
 			if err != nil {

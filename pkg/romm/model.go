@@ -106,7 +106,7 @@ type Item struct {
 
 type SearchResponse struct {
 	Id           interface{} `json:"id"`
-	IgdbId       int64       `json:"igdb_id"`
+	IgdbId       *int64      `json:"igdb_id"`
 	MobyId       interface{} `json:"moby_id"`
 	SsId         interface{} `json:"ss_id"`
 	Slug         string      `json:"slug"`

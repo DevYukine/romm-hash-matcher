@@ -112,7 +112,7 @@ func (c Client) ManuallyMatchRom(rommId int64, fsName string, searchResult *Sear
 		SetQueryParam("remove_cover", "false").
 		SetQueryParam("unmatch_metadata", "false").
 		SetFormData(map[string]string{
-			"igdb_id":   strconv.FormatInt(searchResult.IgdbId, 10),
+			"igdb_id":   strconv.FormatInt(*searchResult.IgdbId, 10),
 			"name":      searchResult.Name,
 			"fs_name":   fsName,
 			"summary":   searchResult.Summary,
@@ -128,7 +128,7 @@ func (c Client) ManuallyMatchRom(rommId int64, fsName string, searchResult *Sear
 		logging.Logger.Error("Unexpected HTTP status", zap.Int("status", res.StatusCode()))
 	}
 
-	logging.Logger.Debug("Manually matched ROM", zap.Int64("rommId", rommId), zap.Int64("igdbId", searchResult.IgdbId))
+	logging.Logger.Debug("Manually matched ROM", zap.Int64("rommId", rommId), zap.Int64p("igdbId", searchResult.IgdbId))
 	return nil
 }
 
@@ -153,7 +153,7 @@ func (c Client) SearchMetadataByIgdbId(rommId int64, igdbId int64) (*SearchRespo
 	result := res.Result().(*[]SearchResponse)
 
 	for _, searchResponse := range *result {
-		if searchResponse.IgdbId == igdbId {
+		if searchResponse.IgdbId == &igdbId {
 			logging.Logger.Debug("Found matching IGDB ID", zap.Int64("rommId", rommId), zap.Int64("igdbId", igdbId))
 			return &searchResponse, nil
 		}
