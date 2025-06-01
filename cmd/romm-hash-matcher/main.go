@@ -30,6 +30,8 @@ func main() {
 	playmatchClient := playmatch.NewClient()
 	hasheosClient := hasheous.NewClient()
 
+	logging.Logger.Info("Fetching unmatched ROMs from RomM, this may take a while depending on the number of ROMs in your collection")
+
 	roms, err := rommClient.GetUnmatchedRoms()
 	if err != nil {
 		logging.Logger.Fatal("Error fetching unmatched ROMs", zap.Error(err))
