@@ -26,7 +26,7 @@ type Item struct {
 	FsNameNoExt         string        `json:"fs_name_no_ext"`
 	FsExtension         string        `json:"fs_extension"`
 	FsPath              string        `json:"fs_path"`
-	FsSizeBytes         int           `json:"fs_size_bytes"`
+	FsSizeBytes         int64         `json:"fs_size_bytes"`
 	Name                string        `json:"name"`
 	Slug                interface{}   `json:"slug"`
 	Summary             interface{}   `json:"summary"`

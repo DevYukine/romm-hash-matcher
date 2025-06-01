@@ -3,6 +3,7 @@ package main
 import (
 	"go.uber.org/zap"
 	env2 "romm-hash-matcher/internal/env"
+	"romm-hash-matcher/internal/hash"
 	"romm-hash-matcher/internal/logging"
 	"romm-hash-matcher/internal/model"
 	"romm-hash-matcher/pkg/hasheous"
@@ -73,7 +74,7 @@ func main() {
 				}
 			} else {
 				logging.Logger.Debug("Found zipped Rom, downloading and hashing the content", zap.String("romName", rom.Name))
-				if rom.FsSizeBytes > 2*1024*1024*1024 {
+				if rom.FsSizeBytes > hash.MaxZipExtractionFileSize {
 					logging.Logger.Warn("Found zipped Rom with size larger than 2GB, skipping for now as hashing would take a long time", zap.String("romName", rom.Name))
 					return
 				}
