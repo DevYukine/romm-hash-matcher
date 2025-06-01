@@ -12,4 +12,13 @@ This is a small program i threw together to match hashes of roms in your RomM Se
 4. If a match on either is found, it will search for metadata on IGDB and update the RomM Server with the metadata (this does the same as when you do a manual search in the UI)
 
 ## Docs
-TODO
+
+### Environment Variables
+
+You need to set following environment variables for the program to work:
+
+- `ROMM_USERNAME` - Your RomM username
+- `ROMM_PASSWORD` - Your RomM password
+- `ROMM_URL` - The URL of your RomM server (e.g. `http://localhost:8000`) including the protocol!
+
+You can also use a .env file to set these variables, just create a `.env` file in the same directory as the script and add the variables there.
