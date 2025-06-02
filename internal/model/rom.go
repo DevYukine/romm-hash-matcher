@@ -5,5 +5,5 @@ type InternalRom struct {
 	Size   int64
 	MD5    string
 	SHA1   string
-	SHA256 string
+	SHA256 *string
 }

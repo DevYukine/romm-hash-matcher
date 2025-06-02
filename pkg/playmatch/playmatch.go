@@ -45,12 +45,17 @@ func (c Client) GetIdBySlug(slug string) (*int64, error) {
 func (c Client) IdentifyGame(rom *model.InternalRom) (*MatchResponse, error) {
 	ratelimit.PlaymatchRatelimit.Take()
 
+	query := map[string]string{}
+	query["fileName"] = rom.Name
+	query["fileSize"] = strconv.FormatInt(rom.Size, 10)
+	query["md5"] = rom.MD5
+	query["sha1"] = rom.SHA1
+	if rom.SHA256 != nil {
+		query["sha256"] = *rom.SHA256
+	}
+
 	resp, err := c.client.R().
-		SetQueryParam("fileName", rom.Name).
-		SetQueryParam("fileSize", strconv.FormatInt(rom.Size, 10)).
-		SetQueryParam("md5", rom.MD5).
-		SetQueryParam("sha1", rom.SHA1).
-		SetQueryParam("sha256", rom.SHA256).
+		SetQueryParams(query).
 		SetResult(&MatchResponse{}).
 		Get("/identify/ids")
 

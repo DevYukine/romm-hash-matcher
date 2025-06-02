@@ -101,7 +101,7 @@ func (c Client) GetMetadataOfZippedRom(url string) (*model.InternalRom, error) {
 		Size:   size,
 		MD5:    md5Hash,
 		SHA1:   sha1Hash,
-		SHA256: sha256Hash,
+		SHA256: &sha256Hash,
 	}, nil
 }
 

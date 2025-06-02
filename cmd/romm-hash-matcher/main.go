@@ -91,7 +91,7 @@ func main() {
 				}
 			}
 
-			logging.Logger.Debug("ROM metadata", zap.String("name", metadataOfRom.Name), zap.Int64("size", metadataOfRom.Size), zap.String("md5", metadataOfRom.MD5), zap.String("sha1", metadataOfRom.SHA1), zap.String("sha256", metadataOfRom.SHA256))
+			logging.Logger.Debug("ROM metadata", zap.String("name", metadataOfRom.Name), zap.Int64("size", metadataOfRom.Size), zap.String("md5", metadataOfRom.MD5), zap.String("sha1", metadataOfRom.SHA1), zap.Stringp("sha256", metadataOfRom.SHA256))
 
 			igdbId, err := matchPlaymatch(playmatchClient, metadataOfRom)
 
