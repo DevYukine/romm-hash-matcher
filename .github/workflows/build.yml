@@ -48,25 +48,16 @@ jobs:
             goarch: arm64
             goarm: ""
     runs-on: ${{ matrix.runner }}
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Go
-        id: setup-go
         uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-
-      - name: Cache Go modules and build cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ steps.setup-go.outputs.go-cache }}
-            ${{ steps.setup-go.outputs.go-mod-cache }}
-          key: ${{ runner.os }}-go-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goarm }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goarm }}-
+          cache: true
 
       - name: Build
         shell: bash
@@ -81,7 +72,10 @@ jobs:
           else
             ext=""
           fi
-          go build -v -o dist/${{ github.event.repository.name }}-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goarm }}$ext cmd/romm-hash-matcher/main.go
+
+          go build -v \
+            -o dist/${{ github.event.repository.name }}-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goarm }}$ext \
+            cmd/romm-hash-matcher/main.go
 
       - name: Upload Action Artifact
         uses: actions/upload-artifact@v4
