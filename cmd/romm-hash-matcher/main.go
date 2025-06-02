@@ -63,7 +63,7 @@ func main() {
 			if !strings.HasSuffix(strings.ToLower(rom.Name), ".zip") {
 				logging.Logger.Debug("Found not zipped Rom, use hash from RomM instead hashing it", zap.String("romName", rom.Name))
 
-				if rom.Md5Hash == nil || rom.Sha1Hash == nil {
+				if rom.Md5Hash == nil || rom.Sha1Hash == nil || *rom.Md5Hash == "" || *rom.Sha1Hash == "" {
 					logging.Logger.Warn("ROM does not have MD5 or SHA1 hash, please run the hashing scan before using this tool once", zap.String("romName", rom.Name))
 					return
 				}
