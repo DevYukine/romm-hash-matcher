@@ -2,6 +2,7 @@ package main
 
 import (
 	"go.uber.org/zap"
+	"net/url"
 	env2 "romm-hash-matcher/internal/env"
 	"romm-hash-matcher/internal/hash"
 	"romm-hash-matcher/internal/logging"
@@ -80,7 +81,7 @@ func main() {
 					return
 				}
 
-				metadataOfRom, err = rommClient.GetMetadataOfZippedRom("/api/roms/" + strconv.FormatInt(int64(rom.Id), 10) + "/content/" + rom.Name)
+				metadataOfRom, err = rommClient.GetMetadataOfZippedRom("/api/roms/" + strconv.FormatInt(int64(rom.Id), 10) + "/content/" + url.PathEscape(rom.Name))
 				if err != nil {
 					logging.Logger.Error("Error getting metadata of zipped ROM", zap.Error(err), zap.String("romName", rom.Name))
 					return
