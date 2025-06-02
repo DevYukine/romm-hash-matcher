@@ -60,6 +60,7 @@ func (c Client) IdentifyGame(rom *model.InternalRom) (*MatchResponse, error) {
 
 	if !resp.IsSuccess() {
 		logging.Logger.Error("Unexpected HTTP status", zap.Int("status", resp.StatusCode()))
+		return nil, nil
 	}
 
 	matchResponse := resp.Result().(*MatchResponse)

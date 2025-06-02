@@ -177,6 +177,11 @@ func matchPlaymatch(client *playmatch.Client, rom *model.InternalRom) (*int64, e
 		return nil, err
 	}
 
+	if identifyResponse == nil {
+		logging.Logger.Error("Playmatch returned nil response", zap.String("romName", rom.Name))
+		return nil, nil
+	}
+
 	if identifyResponse.GameMatchType == playmatch.GameMatchTypeNoMatch {
 		logging.Logger.Debug("Playmatch no match found for game", zap.String("romName", rom.Name))
 		playmatchNotFound++
