@@ -65,7 +65,8 @@ func main() {
 				logging.Logger.Debug("Found not zipped Rom, use hash from RomM instead hashing it", zap.String("romName", rom.Name))
 
 				if rom.Md5Hash == nil || rom.Sha1Hash == nil {
-					logging.Logger.Fatal("ROM does not have MD5 or SHA1 hash, please run the hashing scan before using this tool once", zap.String("romName", rom.Name))
+					logging.Logger.Warn("ROM does not have MD5 or SHA1 hash, please run the hashing scan before using this tool once", zap.String("romName", rom.Name))
+					return
 				}
 
 				metadataOfRom = &model.InternalRom{
