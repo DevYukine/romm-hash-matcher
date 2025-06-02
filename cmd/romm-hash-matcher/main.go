@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 )
 
 var hasheousNotMapped = 0
@@ -51,7 +50,6 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	const batchSize = 10
 	currentCount := 0
 
 	for _, rom := range *roms {
@@ -158,11 +156,6 @@ func main() {
 		}()
 
 		currentCount++
-
-		if currentCount >= batchSize {
-			time.Sleep(2 * time.Second)
-			currentCount = 0
-		}
 	}
 
 	wg.Wait()
