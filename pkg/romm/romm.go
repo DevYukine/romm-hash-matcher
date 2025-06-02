@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap"
 	"io"
 	"resty.dev/v3"
+	"romm-hash-matcher/internal"
 	"romm-hash-matcher/internal/logging"
 	"romm-hash-matcher/internal/model"
 	"romm-hash-matcher/internal/ratelimit"
@@ -23,7 +24,7 @@ type Client struct {
 
 func NewClient(baseUrl string, username string, password string) *Client {
 	return &Client{
-		client: resty.New().SetBasicAuth(username, password).SetHeader("User-Agent", "romm-hash-matcher/1.0").SetBaseURL(baseUrl).SetDisableWarn(true),
+		client: resty.New().SetBasicAuth(username, password).SetHeader("User-Agent", internal.DefaultUserAgent).SetBaseURL(baseUrl).SetDisableWarn(true),
 	}
 }
 

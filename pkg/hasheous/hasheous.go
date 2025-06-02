@@ -3,6 +3,7 @@ package hasheous
 import (
 	"fmt"
 	"resty.dev/v3"
+	"romm-hash-matcher/internal"
 	"romm-hash-matcher/internal/model"
 	"romm-hash-matcher/internal/ratelimit"
 )
@@ -15,7 +16,7 @@ type Client struct {
 
 func NewClient() *Client {
 	return &Client{
-		client: resty.New().SetHeader("User-Agent", "romm-hash-matcher/1.0").SetBaseURL(baseUrl),
+		client: resty.New().SetHeader("User-Agent", internal.DefaultUserAgent).SetBaseURL(baseUrl),
 	}
 }
 

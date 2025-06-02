@@ -3,6 +3,7 @@ package playmatch
 import (
 	"go.uber.org/zap"
 	"resty.dev/v3"
+	"romm-hash-matcher/internal"
 	"romm-hash-matcher/internal/logging"
 	"romm-hash-matcher/internal/model"
 	"romm-hash-matcher/internal/ratelimit"
@@ -17,7 +18,7 @@ type Client struct {
 
 func NewClient() *Client {
 	return &Client{
-		client: resty.New().SetBaseURL(baseUrl).SetHeader("User-Agent", "romm-hash-matcher/1.0"),
+		client: resty.New().SetBaseURL(baseUrl).SetHeader("User-Agent", internal.DefaultUserAgent),
 	}
 }
 
