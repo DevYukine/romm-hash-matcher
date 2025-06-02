@@ -62,8 +62,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ${{ env.GOCACHE }}
-            ${{ env.GOPATH }}/pkg/mod
+            ${{ steps.setup-go.outputs.go-cache }}
+            ${{ steps.setup-go.outputs.go-mod-cache }}
           key: ${{ runner.os }}-go-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goarm }}-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goarm }}-
@@ -82,6 +82,7 @@ jobs:
             ext=""
           fi
           go build -v -o dist/${{ github.event.repository.name }}-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goarm }}$ext cmd/romm-hash-matcher/main.go
+
       - name: Upload Action Artifact
         uses: actions/upload-artifact@v4
         with:
