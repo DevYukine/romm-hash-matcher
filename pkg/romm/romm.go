@@ -23,7 +23,7 @@ type Client struct {
 
 func NewClient(baseUrl string, username string, password string) *Client {
 	return &Client{
-		client: resty.New().SetBasicAuth(username, password).SetHeader("User-Agent", "romm-hash-matcher/1.0").SetBaseURL(baseUrl),
+		client: resty.New().SetBasicAuth(username, password).SetHeader("User-Agent", "romm-hash-matcher/1.0").SetBaseURL(baseUrl).SetDisableWarn(true),
 	}
 }
 
