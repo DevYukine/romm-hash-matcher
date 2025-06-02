@@ -153,7 +153,7 @@ func (c Client) SearchMetadataByIgdbId(rommId int64, igdbId int64) (*SearchRespo
 	result := res.Result().(*[]SearchResponse)
 
 	for _, searchResponse := range *result {
-		if searchResponse.IgdbId == &igdbId {
+		if *searchResponse.IgdbId == igdbId {
 			logging.Logger.Debug("Found matching IGDB ID", zap.Int64("rommId", rommId), zap.Int64("igdbId", igdbId))
 			return &searchResponse, nil
 		}
