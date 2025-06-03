@@ -1,4 +1,4 @@
-package internal
+package http
 
 const version = "1.0.0"
 

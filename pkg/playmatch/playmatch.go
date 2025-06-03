@@ -3,11 +3,12 @@ package playmatch
 import (
 	"go.uber.org/zap"
 	"resty.dev/v3"
-	"romm-hash-matcher/internal"
+	"romm-hash-matcher/internal/http"
 	"romm-hash-matcher/internal/logging"
 	"romm-hash-matcher/internal/model"
 	"romm-hash-matcher/internal/ratelimit"
 	"strconv"
+	"time"
 )
 
 const baseUrl = "https://playmatch.retrorealm.dev/api"
@@ -18,7 +19,7 @@ type Client struct {
 
 func NewClient() *Client {
 	return &Client{
-		client: resty.New().SetBaseURL(baseUrl).SetHeader("User-Agent", internal.DefaultUserAgent),
+		client: resty.New().SetBaseURL(baseUrl).SetHeader("User-Agent", http.DefaultUserAgent),
 	}
 }
 
