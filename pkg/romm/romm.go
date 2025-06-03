@@ -81,6 +81,8 @@ func (c Client) GetMetadataOfZippedRom(url string) (*model.InternalRom, error) {
 			logging.Logger.Fatal("Error opening entry", zap.String("Name", entry.Name), zap.Error(err))
 		}
 
+		defer reader.Close()
+
 		if _, err := io.Copy(multiWriter, reader); err != nil {
 			logging.Logger.Fatal("Error hashing file '%s': %v", zap.String("Name", entry.Name), zap.Error(err))
 		}
