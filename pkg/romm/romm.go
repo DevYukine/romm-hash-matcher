@@ -28,7 +28,14 @@ func NewClient(baseUrl string, username string, password string) *Client {
 	}
 }
 
+var zippedRomSemaphore = make(chan struct{}, 5)
+
 func (c Client) GetMetadataOfZippedRom(url string) (*model.InternalRom, error) {
+	zippedRomSemaphore <- struct{}{}
+	defer func() {
+		<-zippedRomSemaphore
+	}()
+
 	ratelimit.RommRatelimit.Take()
 
 	resp, err := c.client.R().Get(url)
