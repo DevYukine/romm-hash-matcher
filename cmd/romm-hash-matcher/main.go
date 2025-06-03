@@ -127,12 +127,10 @@ func main() {
 
 			if playmatchResult.err != nil {
 				logging.Logger.Error("Error matching ROM with Playmatch", zap.Error(playmatchResult.err), zap.String("romName", rom.Name))
-				return
 			}
 
 			if hasheousResult.err != nil {
 				logging.Logger.Error("Error matching ROM with Hasheous", zap.Error(hasheousResult.err), zap.String("romName", rom.Name))
-				return
 			}
 
 			if playmatchResult.id == nil && hasheousResult.id == nil {
