@@ -51,11 +51,9 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	currentCount := 0
-
 	for _, rom := range *roms {
 		wg.Add(1)
-		go func() {
+		go func(rom romm.Item) {
 			defer wg.Done()
 
 			var metadataOfRom *model.InternalRom
@@ -165,9 +163,7 @@ func main() {
 			}
 
 			logging.Logger.Info("Successfully matched Rom in RomM via Hash", zap.String("romName", rom.Name), zap.Bool("IsMatchedViaPlaymatch", isPlaymatchMatch), zap.Bool("IsMatchedViaHasheous", !isPlaymatchMatch), zap.Int64("romId", rom.Id), zap.Int64p("igdbId", igdbId), zap.Stringp("igdbSlug", searchResult.Slug), zap.String("igdbName", searchResult.Name), zap.String("igdbUrlCover", searchResult.IgdbUrlCover))
-		}()
-
-		currentCount++
+		}(rom)
 	}
 
 	wg.Wait()
