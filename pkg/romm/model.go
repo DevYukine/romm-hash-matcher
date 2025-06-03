@@ -109,7 +109,7 @@ type SearchResponse struct {
 	IgdbId       *int64      `json:"igdb_id"`
 	MobyId       interface{} `json:"moby_id"`
 	SsId         interface{} `json:"ss_id"`
-	Slug         string      `json:"slug"`
+	Slug         *string     `json:"slug"`
 	Name         string      `json:"name"`
 	Summary      string      `json:"summary"`
 	IgdbUrlCover string      `json:"igdb_url_cover"`

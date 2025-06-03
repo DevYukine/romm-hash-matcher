@@ -94,66 +94,79 @@ func main() {
 
 			logging.Logger.Debug("ROM metadata", zap.String("name", metadataOfRom.Name), zap.Int64("size", metadataOfRom.Size), zap.String("md5", metadataOfRom.MD5), zap.String("sha1", metadataOfRom.SHA1), zap.Stringp("sha256", metadataOfRom.SHA256))
 
-			igdbId, err := matchPlaymatch(playmatchClient, metadataOfRom)
+			// Create channels to receive results
+			playmatchCh := make(chan struct {
+				id  *int64
+				err error
+			})
+			hasheousCh := make(chan struct {
+				id  *int64
+				err error
+			})
 
-			if err != nil {
-				logging.Logger.Error("Error identifying game via Playmatch", zap.Error(err), zap.String("romName", rom.Name))
+			// Run both lookups concurrently
+			go func() {
+				id, err := matchPlaymatch(playmatchClient, metadataOfRom)
+				playmatchCh <- struct {
+					id  *int64
+					err error
+				}{id, err}
+			}()
+
+			go func() {
+				id, err := matchHasheous(hasheosClient, playmatchClient, metadataOfRom)
+				hasheousCh <- struct {
+					id  *int64
+					err error
+				}{id, err}
+			}()
+
+			// Wait for both results
+			playmatchResult := <-playmatchCh
+			hasheousResult := <-hasheousCh
+
+			if playmatchResult.err != nil {
+				logging.Logger.Error("Error matching ROM with Playmatch", zap.Error(playmatchResult.err), zap.String("romName", rom.Name))
+				return
 			}
 
-			slug, err := matchHasheous(hasheosClient, metadataOfRom)
-
-			if err != nil {
-				logging.Logger.Error("Error looking up ROM by hash on Hasheous", zap.Error(err), zap.String("romName", rom.Name))
+			if hasheousResult.err != nil {
+				logging.Logger.Error("Error matching ROM with Hasheous", zap.Error(hasheousResult.err), zap.String("romName", rom.Name))
+				return
 			}
 
-			var searchResult *romm.SearchResponse
-
-			isPlaymatchMatch := false
-
-			if igdbId != nil {
-				logging.Logger.Debug("Searching for igdb result by Playmatch Id", zap.Int64("igdbId", *igdbId))
-				searchResult, err = rommClient.SearchMetadataByIgdbId(rom.Id, *igdbId)
-
-				if err != nil {
-					logging.Logger.Error("Error searching metadata by IGDB ID", zap.Error(err), zap.String("romName", rom.Name), zap.Int64("igdbId", *igdbId))
-					return
-				}
-
-				isPlaymatchMatch = true
-			} else if slug != nil {
-				logging.Logger.Debug("Searching for igdb result by Hasheous Slug", zap.String("slug", *slug))
-
-				igdbId, err = playmatchClient.GetIdBySlug(*slug)
-
-				if err != nil {
-					logging.Logger.Error("Error getting IGDB ID from playmatch by Hasheous slug", zap.Error(err), zap.String("romName", rom.Name), zap.String("slug", *slug))
-					return
-				}
-
-				searchResult, err = rommClient.SearchMetadataByIgdbId(rom.Id, *igdbId)
-
-				if err != nil {
-					logging.Logger.Error("Error searching metadata by IGDB ID", zap.Error(err), zap.String("romName", rom.Name), zap.Int64("igdbId", *igdbId))
-					return
-				}
-			} else {
+			if playmatchResult.id == nil && hasheousResult.id == nil {
 				logging.Logger.Info("Could not match rom to IGDB id by hash, consider contributing to Playmatch or Hasheous and match it for the community!", zap.String("romName", rom.Name))
 				return
 			}
 
+			isPlaymatchMatch := playmatchResult.id != nil
+			igdbId := playmatchResult.id
+
+			if igdbId == nil {
+				igdbId = hasheousResult.id
+			}
+
+			searchResult, err := rommClient.SearchMetadataByIgdbId(rom.Id, *igdbId)
+
+			if err != nil {
+				logging.Logger.Error("Error searching metadata by IGDB ID via RomM", zap.Error(err), zap.Int64("romId", rom.Id), zap.Int64p("igdbId", igdbId))
+				return
+			}
+
 			if searchResult == nil || searchResult.IgdbId == nil {
-				logging.Logger.Warn("No IGDB ID found in search result", zap.String("romName", rom.Name), zap.Int64p("igdbId", igdbId), zap.Stringp("slug", slug))
+				logging.Logger.Warn("No IGDB ID found in search result", zap.String("romName", rom.Name), zap.Int64p("igdbId", igdbId))
 				return
 			}
 
 			err = rommClient.ManuallyMatchRom(rom.Id, rom.FsName, searchResult)
 
 			if err != nil {
-				logging.Logger.Error("Error manually matching ROM", zap.Error(err), zap.String("romName", rom.Name), zap.Int64("romId", rom.Id), zap.Int64p("igdbId", igdbId))
+				logging.Logger.Error("Error manually matching ROM", zap.Error(err), zap.String("romName", rom.Name), zap.Int64("romId", rom.Id), zap.Int64p("igdbId", igdbId), zap.Stringp("slug", searchResult.Slug))
 				return
 			}
 
-			logging.Logger.Info("Successfully matched ROM in RomM via Hash", zap.String("romName", rom.Name), zap.Bool("IsMatchedViaPlaymatch", isPlaymatchMatch), zap.Bool("IsMatchedViaHasheous", !isPlaymatchMatch), zap.Int64("romId", rom.Id), zap.Int64p("igdbId", igdbId), zap.Stringp("igdbSlug", slug), zap.String("igdbName", searchResult.Name), zap.String("igdbUrlCover", searchResult.IgdbUrlCover))
+			logging.Logger.Info("Successfully matched Rom in RomM via Hash", zap.String("romName", rom.Name), zap.Bool("IsMatchedViaPlaymatch", isPlaymatchMatch), zap.Bool("IsMatchedViaHasheous", !isPlaymatchMatch), zap.Int64("romId", rom.Id), zap.Int64p("igdbId", igdbId), zap.Stringp("igdbSlug", searchResult.Slug), zap.String("igdbName", searchResult.Name), zap.String("igdbUrlCover", searchResult.IgdbUrlCover))
 		}()
 
 		currentCount++
@@ -201,8 +214,8 @@ func matchPlaymatch(client *playmatch.Client, rom *model.InternalRom) (*int64, e
 	return &id, nil
 }
 
-func matchHasheous(client *hasheous.Client, rom *model.InternalRom) (*string, error) {
-	lookupResponse, err := client.LookupByHash(*rom)
+func matchHasheous(hasheosClient *hasheous.Client, playmatchClient *playmatch.Client, rom *model.InternalRom) (*int64, error) {
+	lookupResponse, err := hasheosClient.LookupByHash(*rom)
 
 	if err != nil {
 		logging.Logger.Error("Error looking up ROM by hash on Hasheous", zap.Error(err), zap.String("romName", rom.Name))
@@ -237,5 +250,16 @@ func matchHasheous(client *hasheous.Client, rom *model.InternalRom) (*string, er
 	hasheousIdentified++
 	logging.Logger.Debug("Hasheos identified Game", zap.String("romName", rom.Name), zap.String("igdbSlug", igdbMedata.Id), zap.String("status", igdbMedata.Status), zap.String("matchType", igdbMedata.MatchMethod))
 
-	return &igdbMedata.Id, nil
+	slug := &igdbMedata.Id
+
+	logging.Logger.Debug("Searching for igdb result by Hasheous Slug", zap.String("slug", *slug))
+
+	igdbId, err := playmatchClient.GetIdBySlug(*slug)
+
+	if err != nil {
+		logging.Logger.Error("Error getting IGDB ID from playmatch by Hasheous slug", zap.Error(err), zap.String("romName", rom.Name), zap.String("slug", *slug))
+		return nil, err
+	}
+
+	return igdbId, nil
 }
