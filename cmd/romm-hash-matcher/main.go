@@ -70,7 +70,7 @@ func main() {
 
 				metadataOfRom = &model.InternalRom{
 					Name: rom.Name,
-					Size: int64(rom.FsSizeBytes),
+					Size: rom.FsSizeBytes,
 					MD5:  *rom.Md5Hash,
 					SHA1: *rom.Sha1Hash,
 				}
