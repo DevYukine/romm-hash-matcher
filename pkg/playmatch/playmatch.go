@@ -57,6 +57,9 @@ func (c Client) IdentifyGame(rom *model.InternalRom) (*MatchResponse, error) {
 	}
 
 	resp, err := c.client.R().
+		AddRetryConditions(http.SimpleHttpRetryCondition).
+		SetRetryCount(3).
+		SetRetryWaitTime(5 * time.Second).
 		SetQueryParams(query).
 		SetResult(&MatchResponse{}).
 		Get("/identify/ids")
