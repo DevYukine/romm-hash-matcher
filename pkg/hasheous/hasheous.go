@@ -26,7 +26,7 @@ func (c Client) LookupByHash(rom model.InternalRom) (*LookupResponse, error) {
 
 	resp, err := c.client.R().
 		AddRetryConditions(http.SimpleHttpRetryCondition).
-		SetRetryCount(3).
+		SetRetryCount(5).
 		SetRetryWaitTime(5 * time.Second).
 		SetBody(&LookupRequest{MD5: rom.MD5, ShA1: rom.SHA1}).
 		SetResult(&LookupResponse{}).
